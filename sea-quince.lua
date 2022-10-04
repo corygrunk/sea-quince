@@ -176,7 +176,7 @@ function enc(n,z)
   if n==1 then
     if shift_func then
       -- change sequins length
-      seq.length = util.clamp(seq.length + z*1,0,16)
+      seq.length = util.clamp(seq.length + z*1,1,16)
     else
       -- change value
       seq[selected_x][selected_y] = util.clamp(seq[selected_x][selected_y] + z*1,0,params:get("pool_size"))
