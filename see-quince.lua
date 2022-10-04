@@ -22,7 +22,7 @@ local notes = {}
 local clock_div = {2,1,1/2,1/3,1/4,1/8}
 local clock_div_text = {'2', '1', '1/2', '1/3', '1/4', '1/8'}
 local clock_div_sel = 3
-local rel = 2.2
+local rel = 1.8
 
 -- NOTE: seq must be a sequin of nested sequins (6 note limit)
 seq = s{s{1,4,6},s{4,12,4,16,4},s{6},s{9,3,4,0,2,9},s{11,4,14,16},s{9,11},s{0},s{4,6,7},s{11},s{16},s{0},s{1},s{1},s{1},s{1},s{1}}
