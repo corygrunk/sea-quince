@@ -1,4 +1,4 @@
--- seek quince
+-- sea quince
 -- v0.1
 -- visual sequins sequencer
 --
@@ -43,7 +43,7 @@ function init()
     table.insert(scale_names, MusicUtil.SCALES[i].name)
   end
 
-  params:add_separator("seek quince")
+  params:add_separator("sea quince")
   
   -- setting root notes using params
   params:add{type = "number", id = "root_note", name = "root note",
@@ -130,7 +130,7 @@ function redraw()
 
   screen.level(3)
   screen.move(0, 5)
-  screen.text('Seek quince')
+  screen.text('Sea quince')
 
   screen.move(75, 5)
   screen.level(shift_func == true and 15 or 1)
