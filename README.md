@@ -1,5 +1,5 @@
 # sea-quince
-Sequins based sequencer for Monome Norns.
+Sequins based sequencer for [Monome Norns]([https://www.google.com](https://monome.org/docs/norns/)) 
 
 ## WIP - Need to improve the ergonomics of the knobs and buttons
 
