@@ -1,4 +1,4 @@
--- Seek wince
+-- seek quince
 -- v0.1
 -- visual sequins sequencer
 --
@@ -9,7 +9,7 @@
 -- key2: add an alternative note
 -- key3: delete an alternative note
 -- shift + enc1: change sequence length
--- shift + enc2: adjust release of PolyPerc
+-- shift + enc2: adjust release of polyperc
 -- shift + enc3: change clock division
 
 s = require('sequins')
@@ -43,7 +43,7 @@ function init()
     table.insert(scale_names, MusicUtil.SCALES[i].name)
   end
 
-  params:add_separator("seek wince")
+  params:add_separator("seek quince")
   
   -- setting root notes using params
   params:add{type = "number", id = "root_note", name = "root note",
@@ -130,7 +130,7 @@ function redraw()
 
   screen.level(3)
   screen.move(0, 5)
-  screen.text('Seek wince')
+  screen.text('Seek quince')
 
   screen.move(75, 5)
   screen.level(shift_func == true and 15 or 1)
