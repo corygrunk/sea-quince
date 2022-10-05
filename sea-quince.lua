@@ -9,7 +9,7 @@
 -- key2: add an alternative note
 -- key3: delete an alternative note
 -- shift + enc1: change mode notes/time
--- shift + enc2: change step size
+-- shift + enc2: change step size (notes mode only)
 -- shift + enc3: change seq length
 
 s = require('sequins')
@@ -19,23 +19,24 @@ tabutil = require('tabutil')
 
 local scale_names = {}
 local notes = {}
-local clock_div = {1,1/2,1/3,1/4,1/8}
-local clock_div_string = {'1/1','1/2','1/3','1/4','1/8'}
-local step_size = 1
-
 
 -- NOTE: seq must be a sequin of nested sequins (6 note limit)
 local seq = s{s{1,4,6},s{4,12,4,16,4},s{6},s{9,3,4,0,2,9},s{11,4,14,16},s{9,11},s{0},s{4,6,7},s{11},s{16},s{0},s{1},s{1},s{1},s{1},s{1}}
-local time = s{s{2},s{2},s{2},s{2},s{2},s{2},s{2},s{2},s{2}}
+local step_size = 1
+local time = s{s{2},s{6},s{6},s{6},s{2},s{2},s{2},s{2},s{2}}
+local clock_div = {1/8,1/4,1/3,1/2,1,2}
+local clock_div_string = {'1/8','1/4','1/3','1/2','1/1','2/1'}
 -- seq = s{s{1},s{2},s{3},s{4},s{5},s{6},s{7},s{8},s{9},s{10},s{11},s{12},s{13},s{14},s{15},s{16}}
 local selected_x = 1
 local selected_y = 1
-local mode = 'time' -- 'notes' or 'time'
+local selected_time_x = 1
+local selected_time_y = 1
+local mode = 'notes' -- 'notes' or 'time'
 local shift_func = false
 
 function init()
-  seq.length = 11
-  time.length = 8
+  seq.length = 4
+  time.length = 4
   data = seq()
   engine.release(1.8)
   screen.level(15)
@@ -80,8 +81,6 @@ end
 -- MAIN CLOCK
 function clock_tick()
   while true do
-    local clk_div = time()
-    clock.sync(clock_div[clk_div])
     step()
   end
 end
@@ -144,12 +143,19 @@ end
 
 -- EVERY CLOCK TICK
 function step()
+  local clk_div = time()
+  -- had to do some wierd stuff here. should fix.
+  -- had to move redraw() and call seq() in init.
+  -- not ideal
+  redraw()
+
+  clock.sync(clock_div[clk_div])
   data = seq()
+
   if type(data) ~= 'table' and data ~= nil and data > 0 then
     local freq = MusicUtil.note_num_to_freq(notes[data])
     engine.hz(freq)
   end
-  redraw()
 end
 
 -- SCREEN REDRAW
@@ -158,7 +164,7 @@ function redraw()
   screen.aa(0)
 
   if mode == 'notes' then
-    screen.level(3)
+    screen.level(shift_func == true and 15 or 3)
     screen.move(0, 5)
     screen.text('Sea quince')
   
@@ -193,7 +199,7 @@ function redraw()
       screen.stroke()
     end
   else -- time mode
-    screen.level(3)
+    screen.level(shift_func == true and 15 or 3)
     screen.move(0, 5)
     screen.text('Time is imaginary')
 
@@ -212,7 +218,7 @@ function redraw()
           else
             screen.level(1)
           end
-          if selected_x == main_seq_ix and selected_y == i then
+          if selected_time_x == main_seq_ix and selected_time_y == i then
             screen.level(15)
           end
           screen.text(time[main_seq_ix][i] == 0 and '*' or clock_div_string[time[main_seq_ix][i]])
@@ -242,7 +248,7 @@ function enc(n,z)
       -- change value
       seq[selected_x][selected_y] = util.clamp(seq[selected_x][selected_y] + z*1,0,params:get("pool_size"))
     else
-      time[selected_x][selected_y] = util.clamp(time[selected_x][selected_y] + z*1,1,tabutil.count(clock_div))
+      time[selected_time_x][selected_time_y] = util.clamp(time[selected_time_x][selected_time_y] + z*1,1,tabutil.count(clock_div))
     end
   elseif n==2 then
     if shift_func and mode == 'notes' then
@@ -260,21 +266,23 @@ function enc(n,z)
       end
     else
       -- navigate left and right
-      local prev_selected_y = selected_y
-      selected_x = util.clamp(selected_x + z*1,1,time.length)
-      if prev_selected_y > time[selected_x].length then
-        selected_y = time[selected_x].length
+      local prev_selected_time_y = selected_time_y
+      selected_time_x = util.clamp(selected_time_x + z*1,1,time.length)
+      if prev_selected_time_y > time[selected_time_x].length then
+        selected_time_y = time[selected_time_x].length
       end
     end
   elseif n==3 then
-    if shift_func then
+    if shift_func and mode == 'notes' then
       -- change step interval
       local step_size_equation = math.floor(seq.length/2) -- make something usable
       step_size = util.clamp(step_size + z*1,-1 * step_size_equation,step_size_equation)
       seq:step(step_size)
-    else
+    elseif mode == 'notes' then
     -- navigate up and down
     selected_y = util.clamp(selected_y + z*1,1,seq[selected_x].length)
+    else
+      selected_time_y = util.clamp(selected_time_y + z*1,1,time[selected_time_x].length) 
     end
   end
   redraw()
