@@ -297,18 +297,26 @@ function key(n,z)
       -- add a nested note sequin
       local duplicate_prev_val = seq[selected_x][seq[selected_x].length]
       add(selected_x,duplicate_prev_val)
+      selected_y = seq[selected_x].length
     else
       -- add a nested time sequin
-      local duplicate_prev_val = time[selected_x][time[selected_x].length]
-      add_time(selected_x,duplicate_prev_val)
+      local duplicate_prev_val = time[selected_time_x][time[selected_time_x].length]
+      add_time(selected_time_x,duplicate_prev_val)
+      selected_time_y = time[selected_time_x].length
     end
   elseif n==3 and z==1 then
     if mode == 'notes' then
       -- delete last note value
       remove(selected_x)
+      if selected_y > seq[selected_x].length then
+        selected_y = seq[selected_x].length
+      end
     else
       -- delete last time value
-      remove_time(selected_x)
+      remove_time(selected_time_x)
+      if selected_time_y > time[selected_time_x].length then
+        selected_time_y = time[selected_time_x].length
+      end
     end
   end
   redraw()
