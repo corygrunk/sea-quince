@@ -170,8 +170,8 @@ function redraw()
     screen.text('Sea quince')
   
     screen.level(shift_func == true and 3 or 0)
-    screen.move(117, 5)
-    screen.text_right('stepsize:')
+    screen.move(113, 5)
+    screen.text_right('step size:')
     
     screen.level(shift_func == true and 15 or 3)
     screen.move(125, 5)
@@ -281,7 +281,7 @@ function enc(n,z)
   elseif n==3 then
     if shift_func and mode == 'notes' then
       -- change step interval
-      local step_size_equation = math.floor(seq.length/2) -- make something usable
+      local step_size_equation = math.floor(seq.length - 1) -- make something usable
       step_size = util.clamp(step_size + z*1,-1 * step_size_equation,step_size_equation)
       seq:step(step_size)
     elseif mode == 'notes' then
