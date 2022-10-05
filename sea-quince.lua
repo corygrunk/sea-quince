@@ -21,9 +21,10 @@ local scale_names = {}
 local notes = {}
 
 -- NOTE: seq must be a sequin of nested sequins (6 note limit)
-local seq = s{s{1,4,6},s{4,12,4,16,4},s{6},s{9,3,4,0,2,9},s{11,4,14,16},s{9,11},s{0},s{4,6,7},s{11},s{16},s{0},s{1},s{1},s{1},s{1},s{1}}
+-- local seq = s{s{1,4,6},s{4,12,4,16,4},s{6},s{9,3,4,0,2,9},s{11,4,14,16},s{9,11},s{0},s{4,6,7},s{11},s{16},s{0},s{1},s{1},s{1},s{1},s{1}}
+local seq = s{s{1,4,9},s{0},s{6},s{9},s{11},s{4,16,4,6},s{1},s{1},s{1},s{1},s{0},s{1},s{1},s{1},s{1},s{1}}
 local step_size = 1
-local time = s{s{2},s{6},s{6},s{6},s{2},s{2},s{2},s{2},s{2}}
+local time = s{s{4},s{4},s{4},s{4},s{4},s{4},s{4},s{4},s{4}}
 local clock_div = {1/8,1/4,1/3,1/2,1,2}
 local clock_div_string = {'1/8','1/4','1/3','1/2','1/1','2/1'}
 -- seq = s{s{1},s{2},s{3},s{4},s{5},s{6},s{7},s{8},s{9},s{10},s{11},s{12},s{13},s{14},s{15},s{16}}
@@ -35,8 +36,8 @@ local mode = 'notes' -- 'notes' or 'time'
 local shift_func = false
 
 function init()
-  seq.length = 4
-  time.length = 4
+  seq.length = 6
+  time.length = 1
   data = seq()
   engine.release(1.8)
   screen.level(15)
@@ -168,6 +169,11 @@ function redraw()
     screen.move(0, 5)
     screen.text('Sea quince')
   
+    screen.level(shift_func == true and 3 or 0)
+    screen.move(117, 5)
+    screen.text_right('stepsize:')
+    
+    screen.level(shift_func == true and 15 or 3)
     screen.move(125, 5)
     screen.text_right(step_size)
   
