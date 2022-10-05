@@ -9,6 +9,6 @@ Sequins based sequencer for [Monome Norns](https://monome.org/docs/norns/)
 * key1 - shift
 * key2 - add a note to a column
 * key3 - remove last note from a column
-* shift + enc1 - change sequence length
-* shift + enc2 - change PolyPerc release time
-* shift + enc3 - change clock division
+* shift + enc1 - change modes (notes / time)
+* shift + enc2 - change sequence length
+* shift + enc3 - change step size (notes only)
