@@ -8,9 +8,9 @@
 -- key1: shift
 -- key2: add an alternative note
 -- key3: delete an alternative note
--- shift + enc1: change sequence length
--- shift + enc2: adjust release of polyperc
--- shift + enc3: change clock division
+-- shift + enc1: change mode notes/time
+-- shift + enc2: change step size
+-- shift + enc3: change seq length
 
 s = require('sequins')
 engine.name = 'PolyPerc'
@@ -22,19 +22,20 @@ local notes = {}
 local clock_div = {2,1,1/2,1/3,1/4,1/8}
 local clock_div_text = {'2', '1', '1/2', '1/3', '1/4', '1/8'}
 local clock_div_sel = 3
-local rel = 1.8
+local step_size = 1
 
 -- NOTE: seq must be a sequin of nested sequins (6 note limit)
-seq = s{s{1,4,6},s{4,12,4,16,4},s{6},s{9,3,4,0,2,9},s{11,4,14,16},s{9,11},s{0},s{4,6,7},s{11},s{16},s{0},s{1},s{1},s{1},s{1},s{1}}
-seq.length = 11
+local seq = s{s{1,4,6},s{4,12,4,16,4},s{6},s{9,3,4,0,2,9},s{11,4,14,16},s{9,11},s{0},s{4,6,7},s{11},s{16},s{0},s{1},s{1},s{1},s{1},s{1}}
+
 -- seq = s{s{1},s{2},s{3},s{4},s{5},s{6},s{7},s{8},s{9},s{10},s{11},s{12},s{13},s{14},s{15},s{16}}
 local selected_x = 1
 local selected_y = 1
 local shift_func = false
 
 function init()
+  seq.length = 11
   data = seq()
-  engine.release(rel)
+  engine.release(1.8)
   screen.level(15)
   screen.aa(0)
   screen.line_width(1)
@@ -132,12 +133,8 @@ function redraw()
   screen.move(0, 5)
   screen.text('Sea quince')
 
-  screen.move(75, 5)
-  screen.level(shift_func == true and 15 or 1)
-  screen.text('rel: ' .. rel)
-
   screen.move(125, 5)
-  screen.text_right(clock_div_text[clock_div_sel])
+  screen.text_right(step_size)
 
   for i=1, seq.length do
     local main_seq_ix = i -- number of column - seq.ix stored to use in nested 'for loop'
@@ -175,16 +172,15 @@ end
 function enc(n,z)
   if n==1 then
     if shift_func then
-      -- change sequins length
-      seq.length = util.clamp(seq.length + z*1,1,16)
+      -- TODO change mode
     else
       -- change value
       seq[selected_x][selected_y] = util.clamp(seq[selected_x][selected_y] + z*1,0,params:get("pool_size"))
     end
   elseif n==2 then
     if shift_func then
-      rel = util.clamp(rel + z*0.1,0.2,4)
-      engine.release(rel)
+      -- change sequence length
+      seq.length = util.clamp(seq.length + z*1,1,16)
     else
       -- navigate left and right
       local prev_selected_y = selected_y
@@ -195,7 +191,10 @@ function enc(n,z)
     end
   elseif n==3 then
     if shift_func then
-      clock_div_sel = util.clamp(clock_div_sel + z*1,1,tabutil.count(clock_div))
+      -- change step interval
+      local step_size_equation = math.floor(seq.length/2) -- make something usable
+      step_size = util.clamp(step_size + z*1,-1 * step_size_equation,step_size_equation)
+      seq:step(step_size)
     else
     -- navigate up and down
     selected_y = util.clamp(selected_y + z*1,1,seq[selected_x].length)
